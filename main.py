@@ -71,7 +71,7 @@ def draw_world():
     for y, row in enumerate(world_data):
         for x, tile in enumerate(row):
             if tile >= 0:
-                screen.blit(img_list[0], (x * TILE_SIZE - scroll, y * TILE_SIZE))
+                screen.blit(img_list[tile], (x * TILE_SIZE - scroll, y * TILE_SIZE))
 
 
 button_list = []
