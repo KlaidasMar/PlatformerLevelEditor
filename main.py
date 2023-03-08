@@ -29,6 +29,7 @@ pine2_img = pygame.image.load('assets/Background/pine2.png').convert_alpha()
 mountain_img = pygame.image.load('assets/Background/mountain.png').convert_alpha()
 sky_img = pygame.image.load('assets/Background/sky_cloud.png').convert_alpha()
 
+
 img_list = []
 for x in range(TILE_TYPES):
     img = pygame.image.load(f"assets/tile/{x}.png")
@@ -38,6 +39,15 @@ for x in range(TILE_TYPES):
 GREEN = (65, 106, 41)
 WHITE = (255, 255, 255)
 RED = (200, 25, 25)
+
+world_data = []
+for row in range(ROWS):
+    r = [-1] * MAX_COLS
+    world_data.append(r)
+
+for tile in range(0, MAX_COLS):
+    world_data[ROWS - 1][tile] = 0
+
 
 def draw_bg():
     screen.fill(GREEN)
@@ -49,11 +59,19 @@ def draw_bg():
         screen.blit(pine2_img, ((x * width) - scroll * 1.5, SCREEN_HEIGHT - pine2_img.get_height()))
 
 
+
 def draw_grid():
     for c in range(MAX_COLS + 1):
         pygame.draw.line(screen, WHITE, (c * TILE_SIZE - scroll, 0), (c * TILE_SIZE  - scroll, SCREEN_HEIGHT))
-    for r in range(ROWS + 1):
-        pygame.draw.line(screen, WHITE, (0, r * TILE_SIZE), (SCREEN_WIDTH, r * TILE_SIZE))
+    for c in range(ROWS + 1):
+        pygame.draw.line(screen, WHITE, (0, c * TILE_SIZE), (SCREEN_WIDTH, c * TILE_SIZE))
+
+
+def draw_world():
+    for y, row in enumerate(world_data):
+        for x, tile in enumerate(row):
+            if tile >= 0:
+                screen.blit(img_list[0], (x * TILE_SIZE - scroll, y * TILE_SIZE))
 
 
 button_list = []
@@ -75,6 +93,7 @@ while run:
 
     draw_bg()
     draw_grid()
+    draw_world()
 
     pygame.draw.rect(screen, GREEN, (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT))
 
@@ -89,6 +108,16 @@ while run:
         scroll -= 5 * scroll_speed
     if scroll_right == True:
         scroll += 5 * scroll_speed
+
+    pos = pygame.mouse.get_pos()
+    x = (pos[0] + scroll) // TILE_SIZE
+    y = pos[1] // TILE_SIZE
+
+    if pos[0] < SCREEN_WIDTH and pos[1] < SCREEN_HEIGHT:
+        if pygame.mouse.get_pressed()[0] == 1:
+            if world_data[y][x] != current_tile:
+                world_data[y][x] = current_tile
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
